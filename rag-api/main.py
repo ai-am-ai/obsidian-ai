@@ -40,7 +40,7 @@ def index():
 @app.post("/ask")
 def ask(request: QuestionRequest):
     try:
-        answer = get_answer(request.question)
-        return {"answer": answer}
+        result = get_answer(request.question)
+        return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

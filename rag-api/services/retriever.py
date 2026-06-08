@@ -35,16 +35,24 @@ def get_answer(question: str) -> str:
     documents = results.get("documents", [[]])[0]
     context = "\n\n".join(documents)
 
+    # Собрать источники из метаданных
+    metadatas = results.get("metadatas", [[]])[0]
+    sources = list(set(m.get("file_name", "unknown") for m in metadatas))
+
     # Передать контекст в LLM
-    prompt = f"""Используй следующий контекст для ответа на вопрос.
-Если ответа нет в контексте — скажи об этом явно.
+    prompt = f"""Ты ассистент по внутренней документации компании.
+Отвечай ТОЛЬКО на основе предоставленного контекста.
+Если ответа нет в контексте — отвечай строго: "Информация по данному вопросу отсутствует в документации."
+Не используй собственные знания.
 
 Контекст:
 {context}
+
+Источники: {sources}
 
 Вопрос: {question}
 
 Ответ:"""
 
     response = llm.complete(prompt)
-    return str(response)
+    return {"answer": str(response), "sources": sources}
