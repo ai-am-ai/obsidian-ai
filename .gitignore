@@ -1,0 +1,26 @@
+# Данные моделей (гигабайты, не нужны в репо)
+ollama_data/
+
+# Векторная БД (генерируется при индексации)
+chroma_data/
+
+# n8n (не используется)
+n8n_data/
+
+# Документы (конфиденциально)
+vault/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+.venv/
+
+# Docker
+.docker/
+
+# OS
+.DS_Store
+Thumbs.db

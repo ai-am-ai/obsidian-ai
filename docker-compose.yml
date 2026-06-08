@@ -1,0 +1,61 @@
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: unless-stopped
+    ports: ["5678:5678"]
+    volumes:
+      - ./n8n_data:/home/node/.n8n
+      - ./vault:/home/node/.n8n-files/vault:ro
+    environment:
+      - N8N_SECURE_COOKIE=false
+      - N8N_PORT=5678
+      - GENERIC_TIMEZONE=Europe/Moscow
+    depends_on: [ollama, chromadb]
+    networks:
+      - ai-net
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    ports: ["11434:11434"]
+    volumes:
+      - ./ollama_data:/root/.ollama
+    deploy:
+      resources:
+        limits:
+          memory: 6G
+    networks:
+      - ai-net
+
+  chromadb:
+    image: chromadb/chroma:0.5.23
+    container_name: chromadb
+    restart: unless-stopped
+    ports: ["8000:8000"]
+    volumes:
+      - ./chroma_data:/chroma/chroma
+    networks:
+      - ai-net
+
+  rag-api:
+    build: ./rag-api
+    container_name: rag-api
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8000
+    volumes:
+      - ./vault:/vault:ro
+    depends_on:
+      - ollama
+      - chromadb
+    networks:
+      - ai-net
+
+networks:
+  ai-net:
