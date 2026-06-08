@@ -51,6 +51,7 @@ services:
       - CHROMA_PORT=8000
     volumes:
       - ./vault:/vault:ro
+      - ./rag-api/data:/app/data
     depends_on:
       - ollama
       - chromadb
