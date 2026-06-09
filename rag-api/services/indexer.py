@@ -24,12 +24,16 @@ def save_manifest(manifest: dict):
         json.dump(manifest, f, indent=2)
 
 def get_vault_files() -> dict:
-    """Возвращает {file_name: mtime} для всех .md файлов в vault"""
+    """Возвращает {rel_path: mtime} для всех .md файлов, исключая служебные папки"""
     result = {}
-    for fname in os.listdir(VAULT_PATH):
-        if fname.endswith(".md"):
-            fpath = os.path.join(VAULT_PATH, fname)
-            result[fname] = os.path.getmtime(fpath)
+    exclude_dirs = {'.git', 'Excalidraw', '.obsidian', '.trash'}
+    for root, dirs, files in os.walk(VAULT_PATH):
+        dirs[:] = [d for d in dirs if d not in exclude_dirs]
+        for fname in files:
+            if fname.endswith('.md'):
+                fpath = os.path.join(root, fname)
+                rel_path = os.path.relpath(fpath, VAULT_PATH)
+                result[rel_path] = os.path.getmtime(fpath)
     return result
 
 def index_file(file_name: str, client, collection, embed_model, splitter) -> list:
@@ -44,9 +48,10 @@ def index_file(file_name: str, client, collection, embed_model, splitter) -> lis
     ids, texts, embeddings, metadatas = [], [], [], []
     for chunk in chunks:
         content = chunk.get_content()
+        if not content.strip():
+            continue
         chunk_id = make_chunk_id(file_name, content)
         embedding = embed_model.get_text_embedding(content)
-
         ids.append(chunk_id)
         texts.append(content)
         embeddings.append(embedding)
@@ -108,7 +113,11 @@ def build_index():
             stats["indexed"].append(file_name)
 
         # Индексировать файл
-        chunk_ids = index_file(file_name, client, collection, embed_model, splitter)
+        try:
+            chunk_ids = index_file(file_name, client, collection, embed_model, splitter)
+        except Exception as e:
+            print(f"ERROR indexing {file_name}: {e}")
+            chunk_ids = []
         manifest[file_name] = {"mtime": mtime, "chunk_ids": chunk_ids}
 
     save_manifest(manifest)

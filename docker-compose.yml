@@ -50,7 +50,7 @@ services:
       - CHROMA_HOST=chromadb
       - CHROMA_PORT=8000
     volumes:
-      - ./vault:/vault:ro
+      - /mnt/c/Users/Айдын/Desktop/mathmodelvault:/vault:ro
       - ./rag-api/data:/app/data
     depends_on:
       - ollama
