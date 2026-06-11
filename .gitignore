@@ -27,3 +27,6 @@ Thumbs.db
 vault/.index_manifest.json
 rag-api/data/
 vault-real
+
+# Отчёты
+reports/
