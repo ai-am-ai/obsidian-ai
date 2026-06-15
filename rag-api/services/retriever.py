@@ -34,7 +34,7 @@ def get_answer(question: str) -> str:
     )
 
     # Поиск в двух коллекциях
-    manuals_results = _query_collection(client, COLLECTION_NAME, question_embedding, n=3)
+    manuals_results = _query_collection(client, COLLECTION_NAME, question_embedding, n=5)
     glossary_results = _query_collection(client, GLOSSARY_COLLECTION, question_embedding, n=3)
 
     # Объединить контекст
