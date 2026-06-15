@@ -39,6 +39,15 @@ def get_vault_files() -> dict:
 def index_file(file_name: str, client, collection, embed_model, splitter) -> list:
     """Индексирует один файл, возвращает список chunk_id"""
     fpath = os.path.join(VAULT_PATH, file_name)
+
+    try:
+        with open(fpath, "r", encoding="utf-8") as f:
+            head = f.read(200)
+        if "excalidraw-plugin:" in head:
+            return []
+    except Exception:
+        return []
+
     documents = SimpleDirectoryReader(
         input_files=[fpath]
     ).load_data()
