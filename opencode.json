@@ -14,30 +14,5 @@
         }
       }
     }
-  },
-  "permission": {
-    "bash": {
-      "docker compose *": "allow",
-      "docker *": "allow",
-      "git *": "allow",
-      "pip *": "allow",
-      "mkdir *": "allow",
-      "python *": "allow",
-      "uv *": "allow",
-      "curl *": "allow",
-      "cat *": "allow",
-      "ls *": "allow",
-      "find *": "allow",
-      "grep *": "allow",
-      "echo *": "allow",
-      "cp *": "allow",
-      "mv *": "allow",
-      "chmod *": "allow",
-      "sed *": "allow",
-      "rm -rf *": "deny",
-      "rm *": "ask",
-      "sudo *": "deny",
-      "*": "ask"
     }
-  }
 }
