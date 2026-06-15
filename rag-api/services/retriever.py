@@ -39,7 +39,13 @@ def get_answer(question: str) -> str:
 
     # Объединить контекст
     manuals_docs = manuals_results.get("documents", [[]])[0]
-    glossary_docs = glossary_results.get("documents", [[]])[0]
+
+    glossary_raw_docs = glossary_results.get("documents", [[]])[0]
+    glossary_distances = glossary_results.get("distances", [[]])[0]
+    glossary_docs = [
+        doc for doc, dist in zip(glossary_raw_docs, glossary_distances)
+        if dist < 600
+    ]
 
     parts = []
     if glossary_docs:
@@ -50,7 +56,13 @@ def get_answer(question: str) -> str:
 
     # Объединить источники
     manuals_meta = manuals_results.get("metadatas", [[]])[0]
-    glossary_meta = glossary_results.get("metadatas", [[]])[0]
+    glossary_meta = [
+        meta for meta, dist in zip(
+            glossary_results.get("metadatas", [[]])[0],
+            glossary_distances
+        )
+        if dist < 600
+    ]
     sources = list(set(
         m.get("file_name", "unknown") for m in manuals_meta + glossary_meta
     ))
